@@ -65,6 +65,11 @@ var func_y = null;
 var func_t = null;
 
 /*********************************************************
+ * KEYBOARD KEY CODE
+ *********************************************************/
+var key = 0;
+
+/*********************************************************
  * CLEAR CANVAS
  *********************************************************/
 function clearCanvas()
@@ -199,42 +204,30 @@ function plotParam(func, tMin, tMax, dt)
 }
 
 /*********************************************************
- * DRAW THE GRAPH
+ * DRAW A GRAPH
  *********************************************************/
-function drawGraph()
+function graph(xValues, yValues, color)
 {
    // set the color
-   ctx.fillStyle = graphColorXY;
+   ctx.fillStyle = color;
    
    // plot each X->Y point
-   for (var i = 0; i < xy_x_values.length; i++)
+   for (var i = 0; i < xValues.length; i++)
    {
-      var x = xy_x_values[i];
-      var y = xy_y_values[i];
+      var x = xValues[i];
+      var y = yValues[i];
       ctx.fillRect(Y_AXIS + x, X_AXIS - y, 2, 2);
    }
-   
-   // set the color
-   ctx.fillStyle = graphColorYX;
-   
-   // plot each Y->X point
-   for (var i = 0; i < yx_x_values.length; i++)
-   {
-      var x = yx_x_values[i];
-      var y = yx_y_values[i];
-      ctx.fillRect(Y_AXIS + x, X_AXIS - y, 2, 2);
-   }
-   
-   // set the color
-   ctx.fillStyle = graphColorT;
-   
-   // plot each T (x, y) point
-   for (var i = 0; i < t_x_values.length; i++)
-   {
-      var x = t_x_values[i];
-      var y = t_y_values[i];
-      ctx.fillRect(Y_AXIS + x, X_AXIS - y, 2, 2);
-   }
+};
+
+/*********************************************************
+ * DRAW ALL GRAPHS
+ *********************************************************/
+function drawGraphs()
+{
+   graph(xy_x_values, xy_y_values, graphColorXY);
+   graph(yx_x_values, yx_y_values, graphColorYX);
+   graph(t_x_values,  t_y_values,  graphColorT);
 }
 
 /*********************************************************
@@ -294,7 +287,7 @@ function run()
    clearCanvas();
    drawAxes();
    drawTicks();
-   drawGraph();
+   drawGraphs();
 }
 
 /*********************************************************
@@ -320,7 +313,8 @@ window.onload = function()
                        'func_t = null;';
    
    // run
-   setInterval(run, 1000 / FPS)
+   /* setInterval(run, 1000 / FPS) */
+   run();
 };
 
 /*********************************************************
@@ -368,6 +362,9 @@ btEval.onclick = function()
       // plot T->XY if defined
       if (func_t != null)
          plotParam(func_t, tLowerBound, tUpperBound, deltaT);
+
+      // redraw
+      run();
    }
    else
    {
@@ -376,11 +373,6 @@ btEval.onclick = function()
       func_t = null;
    }
 };
-
-/*********************************************************
- * KEYBOARD KEY CODE
- *********************************************************/
-var key = 0;
 
 /*********************************************************
  * WINDOW : ON KEY DOWN
