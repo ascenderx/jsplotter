@@ -12,18 +12,18 @@ canvas
 textarea
 {
    width: 400px;
+   height: 390px;
    resize: none;
-   height: 100px;
    font-family: 'Menlo', 'Consolas', monospace;
    font-size: 12px;
-   border: 1px solid #afafaf;
+   border: 1px solid #00afff;
    background-color: #000000;
-   color: #00ff00;
+   color: #00afff;
 }
 
 textarea:focus, textarea:hover
 {
-   background-color: #001f00;
+   background-color: #000f1f;
 }
 
 button
@@ -36,7 +36,7 @@ button
    width: 402px;
 }
 
-button:hover
+button:hover, button:focus
 {
    color: #000000;
    background-color: #ff7f00;

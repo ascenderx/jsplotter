@@ -6,12 +6,28 @@
       <link rel="stylesheet" href="graph.css">
    </head>
    <body>
-      <canvas id="canvas" width="400px" height="400px"></canvas>
-      <br />
-      <textarea id="txtInput" spellcheck="false"></textarea>
-      <br />
-      <button id="btEval">EVALUATE</button>
-      
+      <table>
+         <tr>
+            <td>
+               <canvas id="canvas" width="400px" height="400px">
+                  Your browser does not support the
+                  <code>&lt;canvas&gt;</code> element.
+               </canvas>
+            </td>
+            <td>
+               <textarea id="txtInput" spellcheck="false">
+               </textarea>
+            </td>
+         </tr>
+         <tr>
+            <td>
+            </td>
+            <td>
+               <button id="btEval">EVALUATE</button>
+            </td>
+         </tr>
+      </table>
+        
       <script src="graph.js"></script>
    </body>
 </html>
