@@ -10,6 +10,7 @@ const canvas   = document.getElementById('canvas');
 const ctx      = canvas.getContext('2d');
 const txtInput = document.getElementById('txtInput');
 const btEval   = document.getElementById('btEval');
+const btClear  = document.getElementById('btClear');
 
 /*********************************************************
  * GRAPH CONTANTS
@@ -313,6 +314,16 @@ window.onbeforeunload = function()
 };
 
 /*********************************************************
+ * CLEAR BUTTON : ON CLICK
+ *********************************************************/
+btClear.onclick = function()
+{
+   clearPlotXY();
+   clearPlotYX();
+   clearPlotT();
+};
+
+/*********************************************************
  * EVALUATE BUTTON : ON CLICK
  *********************************************************/
 btEval.onclick = function()
@@ -406,9 +417,9 @@ window.onkeydown = function(event)
          txtInput.selectionStart = cursor + 3;
          txtInput.selectionEnd   = cursor + 3;
       }
-      // if ESC was pressed, then focus on the evaluate button
+      // if ESC was pressed, then focus on the clear button
       else if (event.keyCode == 27)
-         btEval.focus();
+         btClear.focus();
 };
 
 /*********************************************************
