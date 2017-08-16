@@ -13,6 +13,20 @@ const btEval   = document.getElementById('btEval');
 const btClear  = document.getElementById('btClear');
 
 /*********************************************************
+ * GRAPH VARIABLES
+ *********************************************************/
+var graphColorXY = '#ff0000';
+var graphColorYX = '#00ff00';
+var graphColorT  = '#ff7f00';
+var numTicksX    = 50;
+var numTicksY    = 50;
+var deltaX       = 0.01;
+var deltaY       = 0.01;
+var deltaT       = 0.01;
+var tLowerBound  = -10;
+var tUpperBound  = 10;
+
+/*********************************************************
  * GRAPH CONTANTS
  *********************************************************/
 const X_MIN       = 0;
@@ -21,19 +35,12 @@ const Y_MIN       = 0;
 const Y_MAX       = canvas.height;
 const X_AXIS      = (X_MAX - X_MIN) / 2;
 const Y_AXIS      = (Y_MAX - Y_MIN) / 2;
-const X_TICK      = (X_MAX - X_MIN) / 20;
-const Y_TICK      = (X_MAX - X_MIN) / 20;
+const X_TICK      = (X_MAX - X_MIN) / numTicksX;
+const Y_TICK      = (X_MAX - X_MIN) / numTicksY;
 const FPS         = 100;
 const CLEAR_COLOR = '#000000';
 const AXIS_COLOR  = '#7f7f7f';
 const TICK_COLOR  = '#5f5f5f';
-
-/*********************************************************
- * GRAPH VARIABLES
- *********************************************************/
-var graphColorXY = '#ff0000';
-var graphColorYX = '#00ff00';
-var graphColorT  = '#ff7f00';
 
 /*********************************************************
  * EXTRA MATH CONSTANTS
@@ -349,21 +356,21 @@ btEval.onclick = function()
       if (func_x != null)
       {
          clearPlotXY();
-         plotXY(func_x, -10, 10, 0.01);
+         plotXY(func_x, -numTicksX / 2, numTicksX / 2, deltaX);
       }
       
       // plot Y->X if defined
       if (func_y != null)
       {
          clearPlotYX();
-         plotYX(func_y, -10, 10, 0.01);
+         plotYX(func_y, -numTicksY / 2, numTicksY / 2, deltaY);
       }
       
       // plot T->XY if defined
       if (func_t != null)
       {
          clearPlotT();
-         plotParam(func_t, -10, 10, 0.01);
+         plotParam(func_t, tLowerBound, tUpperBound, deltaT);
       }
       
       // if all three are empty, then simply clear
