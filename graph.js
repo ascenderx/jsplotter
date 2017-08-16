@@ -18,8 +18,8 @@ const btClear  = document.getElementById('btClear');
 var graphColorXY = '#ff0000';
 var graphColorYX = '#00ff00';
 var graphColorT  = '#ff7f00';
-var numTicksX    = 50;
-var numTicksY    = 50;
+var numTicksX    = 20;
+var numTicksY    = 20;
 var deltaX       = 0.01;
 var deltaY       = 0.01;
 var deltaT       = 0.01;
@@ -352,34 +352,22 @@ btEval.onclick = function()
       // evaluate the JavaScript in the text area
       eval(txtInput.value);
       
+      // clear all plots
+      clearPlotXY();
+      clearPlotYX();
+      clearPlotT();
+      
       // plot X->Y if defined
       if (func_x != null)
-      {
-         clearPlotXY();
          plotXY(func_x, -numTicksX / 2, numTicksX / 2, deltaX);
-      }
       
       // plot Y->X if defined
       if (func_y != null)
-      {
-         clearPlotYX();
          plotYX(func_y, -numTicksY / 2, numTicksY / 2, deltaY);
-      }
       
       // plot T->XY if defined
       if (func_t != null)
-      {
-         clearPlotT();
          plotParam(func_t, tLowerBound, tUpperBound, deltaT);
-      }
-      
-      // if all three are empty, then simply clear
-      if (func_x == null && func_y == null && func_t == null)
-      {
-         clearPlotXY();
-         clearPlotYX();
-         clearPlotT();
-      }
    }
    else
    {
