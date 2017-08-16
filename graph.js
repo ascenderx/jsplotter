@@ -331,9 +331,13 @@ window.onbeforeunload = function()
  *********************************************************/
 btClear.onclick = function()
 {
+   // clear all plots
    clearPlotXY();
    clearPlotYX();
    clearPlotT();
+
+   // redraw
+   run();
 };
 
 /*********************************************************
