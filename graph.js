@@ -19,6 +19,8 @@ const GRAPH_COLOR = '#007fff';
 const AXIS_COLOR  = '#ffffff';
 const TICK_COLOR  = '#afafaf';
 
+const PHI         = (1 + Math.sqrt(5)) / 2;
+
 var   x_values    = [];
 var   y_values    = [];
 
@@ -171,8 +173,6 @@ window.onload = function()
 btEval.onclick = function()
 {
    clearPlot();
-   
-   txtInput.value = txtInput.value.trim();
    
    if (txtInput.value != '')
    {
