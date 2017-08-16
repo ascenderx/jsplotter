@@ -19,15 +19,21 @@ const X_MIN       = 0;
 const X_MAX       = canvas.width;
 const Y_MIN       = 0;
 const Y_MAX       = canvas.height;
-const X_AXIS      = 200;
-const Y_AXIS      = 200;
-const X_TICK      = 20;
-const Y_TICK      = 20;
-const CLEAR_COLOR = '#000000';
+const X_AXIS      = (X_MAX - X_MIN) / 2;
+const Y_AXIS      = (Y_MAX - Y_MIN) / 2;
+const X_TICK      = (X_MAX - X_MIN) / 20;
+const Y_TICK      = (X_MAX - X_MIN) / 20;
 const FPS         = 100;
-const GRAPH_COLOR = '#007fff';
-const AXIS_COLOR  = '#0000ff';
-const TICK_COLOR  = '#0000ff';
+const CLEAR_COLOR = '#000000';
+const AXIS_COLOR  = '#7f7f7f';
+const TICK_COLOR  = '#5f5f5f';
+
+/*********************************************************
+ * GRAPH VARIABLES
+ *********************************************************/
+var graphColorXY = '#ff0000';
+var graphColorYX = '#00ff00';
+var graphColorT  = '#ff7f00';
 
 /*********************************************************
  * EXTRA MATH CONSTANTS
@@ -191,7 +197,7 @@ function plotParam(func, tMin, tMax, dt)
 function drawGraph()
 {
    // set the color
-   ctx.fillStyle = GRAPH_COLOR;
+   ctx.fillStyle = graphColorXY;
    
    // plot each X->Y point
    for (var i = 0; i < xy_x_values.length; i++)
@@ -201,6 +207,9 @@ function drawGraph()
       ctx.fillRect(Y_AXIS + x, X_AXIS - y, 2, 2);
    }
    
+   // set the color
+   ctx.fillStyle = graphColorYX;
+   
    // plot each Y->X point
    for (var i = 0; i < yx_x_values.length; i++)
    {
@@ -208,6 +217,9 @@ function drawGraph()
       var y = yx_y_values[i];
       ctx.fillRect(Y_AXIS + x, X_AXIS - y, 2, 2);
    }
+   
+   // set the color
+   ctx.fillStyle = graphColorT;
    
    // plot each T (x, y) point
    for (var i = 0; i < t_x_values.length; i++)
