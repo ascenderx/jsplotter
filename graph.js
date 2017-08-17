@@ -13,18 +13,30 @@ const btEval   = document.getElementById('btEval');
 const btClear  = document.getElementById('btClear');
 
 /*********************************************************
+ * GRID TYPE CONSTANTS
+ *********************************************************/
+const GRID_NONE   = 0;
+const GRID_CART   = 1;
+const GRID_POLAR  = 2;
+
+/*********************************************************
  * GRAPH VARIABLES
  *********************************************************/
 var graphColorXY = '#ff0000';
 var graphColorYX = '#00ff00';
-var graphColorT  = '#ff7f00';
+var graphColorPR = '#ff7f00';
+var graphColorPL = '#007fff';
 var numTicksX    = 20;
 var numTicksY    = 20;
 var deltaX       = 0.01;
 var deltaY       = 0.01;
 var deltaT       = 0.01;
+var deltaTh      = 0.01;
 var tLowerBound  = -10;
-var tUpperBound  = 10;
+var tUpperBound  = +10;
+var thLowerBound = 0;
+var thUpperBound = +8 * Math.PI;
+var gridType     = GRID_CART;
 
 /*********************************************************
  * GRAPH CONTANTS
@@ -41,6 +53,7 @@ const FPS         = 100;
 const CLEAR_COLOR = '#000000';
 const AXIS_COLOR  = '#7f7f7f';
 const TICK_COLOR  = '#5f5f5f';
+const GRID_COLOR  = '#3f3f3f';
 
 /*********************************************************
  * EXTRA MATH CONSTANTS
@@ -54,15 +67,18 @@ var xy_x_values = [];
 var xy_y_values = [];
 var yx_x_values = [];
 var yx_y_values = [];
-var t_x_values  = [];
-var t_y_values  = [];
+var pr_x_values = [];
+var pr_y_values = [];
+var pl_x_values = [];
+var pl_y_values = [];
 
 /*********************************************************
  * FUNCTIONS USED FOR PLOTTING
  *********************************************************/
-var func_x = null;
-var func_y = null;
-var func_t = null;
+var func_x  = null;
+var func_y  = null;
+var func_t  = null;
+var func_th = null;
 
 /*********************************************************
  * KEYBOARD KEY CODE
@@ -97,12 +113,21 @@ function clearPlotYX()
 }
 
 /*********************************************************
- * CLEAR T->XY (PARAMATERIZED) PLOT ARRAY
+ * CLEAR T->XY (PARAMETRIC CARTESIAN) PLOT ARRAY
  *********************************************************/
-function clearPlotT()
+function clearPlotParam()
 {
-   t_x_values = [];
-   t_y_values = [];
+   pr_x_values = [];
+   pr_y_values = [];
+}
+
+/*********************************************************
+ * CLEAR THETA->R (POLAR) PLOT ARRAY
+ *********************************************************/
+function clearPlotPolar()
+{
+   pl_x_values = [];
+   pl_y_values = [];
 }
 
 /*********************************************************
@@ -133,7 +158,7 @@ function drawTicks()
 {
    // set the color
    ctx.strokeStyle = TICK_COLOR;
-
+   
    // draw the x-axis ticks
    for (var x = 0; x < X_MAX; x += X_TICK)
    {
@@ -149,6 +174,51 @@ function drawTicks()
       ctx.beginPath();
       ctx.moveTo(Y_AXIS - 5, y);
       ctx.lineTo(Y_AXIS + 5, y);
+      ctx.stroke();
+   }
+}
+
+/*********************************************************
+ * DRAW CARTESIAN GRID
+ *********************************************************/
+function drawGridCartesian()
+{
+   // set the color
+   ctx.strokeStyle = GRID_COLOR;
+
+   // draw the vertical lines
+   for (var i = 0; i < numTicksX; i++)
+   {
+      var x = i * X_TICK;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+      ctx.stroke();
+   }
+
+   // draw the horizontal lines
+   for (var i = 0; i < numTicksY; i++)
+   {
+      var y = i * Y_TICK;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.stroke();
+   }
+}
+
+/*********************************************************
+ * DRAW POLAR GRID
+ *********************************************************/
+function drawGridPolar()
+{
+   // set the color
+   ctx.strokeStyle = GRID_COLOR;
+   
+   for (var i = 0; i < numTicksX; i++)
+   {
+      ctx.beginPath();
+      ctx.arc(X_AXIS, Y_AXIS, i * X_TICK, 0, 2 * Math.PI);
       ctx.stroke();
    }
 }
@@ -186,7 +256,7 @@ function plotYX(func, yMin, yMax, dy)
 }
 
 /*********************************************************
- * FILL T->XY (PARAMTERIZED) PLOT ARRAY
+ * FILL T->XY (PARAMETRIC CARTESIAN) PLOT ARRAY
  *********************************************************/
 function plotParam(func, tMin, tMax, dt)
 {
@@ -198,8 +268,26 @@ function plotParam(func, tMin, tMax, dt)
       var y = T['y'];
       
       // add x & y to plot arrays
-      t_x_values.push(x * X_TICK);
-      t_y_values.push(y * Y_TICK);
+      pr_x_values.push(x * X_TICK);
+      pr_y_values.push(y * Y_TICK);
+   }
+}
+
+/*********************************************************
+ * FILL TH->R (POLAR) PLOT ARRAY
+ *********************************************************/
+function plotPolar(func, thMin, thMax, dth)
+{
+   for (var th = thMin; th <= thMax; th += dth)
+   {
+      // get output variables
+      var R = func(th);
+      var x = R * Math.cos(th);
+      var y = R * Math.sin(th);
+      
+      // add x & y to plot arrays
+      pl_x_values.push(x * X_TICK);
+      pl_y_values.push(y * Y_TICK);
    }
 }
 
@@ -227,7 +315,8 @@ function drawGraphs()
 {
    graph(xy_x_values, xy_y_values, graphColorXY);
    graph(yx_x_values, yx_y_values, graphColorYX);
-   graph(t_x_values,  t_y_values,  graphColorT);
+   graph(pr_x_values, pr_y_values, graphColorPR);
+   graph(pl_x_values, pl_y_values, graphColorPL);
 }
 
 /*********************************************************
@@ -284,9 +373,31 @@ function randomize()
  *********************************************************/
 function run()
 {
+   // clear the canvas
    clearCanvas();
+
+   // determine what grid to draw
+   switch (gridType)
+   {
+      case GRID_CART:
+         drawGridCartesian();
+         break;
+
+      case GRID_POLAR:
+         drawGridPolar();
+         break;
+
+      case GRID_NONE:
+      default:
+         break;
+   }
+   
+   // draw the axes and ticks
    drawAxes();
-   drawTicks();
+   if (gridType != GRID_POLAR)
+      drawTicks();
+
+   // finally, draw the graphs
    drawGraphs();
 }
 
@@ -294,11 +405,12 @@ function run()
  * WINDOW : ON LOAD
  *********************************************************/
 window.onload = function()
-{
+{  
    // clear the plot arrays
    clearPlotXY();
    clearPlotYX();
-   clearPlotT();
+   clearPlotParam();
+   clearPlotPolar();
 
    // get the text for the text area from memory
    var text = localStorage.getItem('text');
@@ -308,9 +420,10 @@ window.onload = function()
       txtInput.value = text;
    // otherwise, use a default
    else
-      txtInput.value = 'func_x = null;\n' +
-                       'func_y = null;\n' + 
-                       'func_t = null;';
+      txtInput.value = 'func_x  = null;\n' +
+                       'func_y  = null;\n' + 
+                       'func_t  = null;\n' +
+                       'func_th = null;';
    
    // run
    /* setInterval(run, 1000 / FPS) */
@@ -334,7 +447,8 @@ btClear.onclick = function()
    // clear all plots
    clearPlotXY();
    clearPlotYX();
-   clearPlotT();
+   clearPlotParam();
+   clearPlotPolar();
 
    // redraw
    run();
@@ -353,7 +467,8 @@ btEval.onclick = function()
       // clear all plots
       clearPlotXY();
       clearPlotYX();
-      clearPlotT();
+      clearPlotParam();
+      clearPlotPolar();
       
       // plot X->Y if defined
       if (func_x != null)
@@ -367,14 +482,19 @@ btEval.onclick = function()
       if (func_t != null)
          plotParam(func_t, tLowerBound, tUpperBound, deltaT);
 
+      // plot TH->R if defined
+      if (func_th != null)
+         plotPolar(func_th, thLowerBound, thUpperBound, deltaTh);
+      
       // redraw
       run();
    }
    else
    {
-      func_x = null;
-      func_y = null;
-      func_t = null;
+      func_x  = null;
+      func_y  = null;
+      func_t  = null;
+      func_th = null;
    }
 };
 
