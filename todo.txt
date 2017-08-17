@@ -1,0 +1,41 @@
+###########################################################
+# TO DO 
+###########################################################
+
+###########################################################
+# GRAPH APPEARANCE
+###########################################################
+-> Add option to change graph colors
+   --> This will require using setInterval() in window.onload()
+       instead of directly calling run() and then again in
+       btClear.onclick() and btEval.onclick().
+   --> Use sliders? Text boxes? Both?
+
+-> Add zoom option
+   --> This will modify numTicksX, numTicksY, X_TICKS and Y_TICKS.
+   --> This will require finding a way to draw ellipses for polar
+       grid if numTicksX != numTicksY.
+       ---> Provided we're allowing a skewed zoom (desired?)
+
+-> Add pan option
+   --> This will require moving X_AXIS and Y_AXIS and modifying
+       numTicksX and numTicksY (but not X_TICK or Y_TICK).
+   --> The cursor for the canvas should change to a hand while panning.
+
+-> Add cursors
+   --> CSS? Manually draw in canvas?
+
+###########################################################
+# GRAPH BEHAVIOR : FUNCTIONS
+###########################################################
+-> Allow user to define an indefinite number of functions to plot.
+   --> Use a table? A list of text boxes?
+   --> This will likely require using an array of functions
+       for each of the plot types.
+
+###########################################################
+# GRAPH BEHAVIOR : PLOTS
+###########################################################
+-> Allow view toggle for each plot.
+   --> This will require each function essentially having a
+       boolean attached to it determining if it is visible.
